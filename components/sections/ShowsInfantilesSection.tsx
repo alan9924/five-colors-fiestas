@@ -84,91 +84,95 @@ const ShowsInfantilesSection: React.FC = () => {
             </button>
             <ShowMenu />
 
-            {/* Height adjusted for mobile and desktop screens */}
-            <div ref={containerRef} className="h-[350vh] md:h-[400vh] relative">
-                <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-black">
-                    <video
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover opacity-80"
-                    >
-                        <source src="/sin_marca.mp4" type="video/mp4" />
-                    </video>
+            <main className="w-full max-w-[100vw] overflow-x-hidden">
+                {/* Height adjusted for mobile and desktop screens, using dynamic viewport units */}
+                <div ref={containerRef} className="h-[350dvh] md:h-[400vh] relative w-full">
+                    <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-black">
+                        {/* Video Layer - Pointer events none for performance */}
+                        <video
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover opacity-80 pointer-events-none"
+                        >
+                            <source src="/sin_marca.mp4" type="video/mp4" />
+                        </video>
 
-                    <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+                        <div className="absolute inset-0 bg-black/30 pointer-events-none" />
 
-                    <div className="absolute inset-0 flex items-center justify-center p-4 md:p-6 text-center text-white z-10 w-full">
+                        {/* Content Layer - Full width/height, centralized */}
+                        <div className="absolute inset-0 flex items-center justify-center w-full h-full z-10 p-4">
 
-                        {/* Screen 1 */}
-                        <motion.div style={{ opacity: opacity1, y: y1 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-4xl">
-                            <h2 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] leading-tight">
-                                Shows Infantiles
-                            </h2>
-                            <p className="text-lg sm:text-2xl md:text-4xl font-bold text-brand-yellow drop-shadow-md">
-                                El show empieza aquí.
-                            </p>
-                        </motion.div>
+                            {/* Screen 1 */}
+                            <motion.div style={{ opacity: opacity1, y: y1 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center">
+                                <h2 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] leading-tight text-white max-w-5xl mx-auto">
+                                    Shows Infantiles
+                                </h2>
+                                <p className="text-lg sm:text-2xl md:text-4xl font-bold text-brand-yellow drop-shadow-md max-w-3xl mx-auto">
+                                    El show empieza aquí.
+                                </p>
+                            </motion.div>
 
-                        {/* Screen 2: NEW - 20+ Personajes */}
-                        <motion.div style={{ opacity: opacity2, y: y2 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-3xl drop-shadow-md">
-                            <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-orange leading-tight">
-                                +20 Personajes
-                            </h3>
-                            <p className="text-base sm:text-xl md:text-3xl font-bold leading-relaxed">
-                                Desde clásicos hasta los más nuevos. ¡Tenemos a tu favorito listo para la fiesta!
-                            </p>
-                        </motion.div>
+                            {/* Screen 2: NEW - 20+ Personajes */}
+                            <motion.div style={{ opacity: opacity2, y: y2 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center pointer-events-none">
+                                <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-orange leading-tight drop-shadow-lg max-w-4xl mx-auto">
+                                    +20 Personajes
+                                </h3>
+                                <p className="text-white text-base sm:text-xl md:text-3xl font-bold leading-relaxed max-w-2xl mx-auto drop-shadow-md">
+                                    Desde clásicos hasta los más nuevos. ¡Tenemos a tu favorito listo para la fiesta!
+                                </p>
+                            </motion.div>
 
-                        {/* Screen 3: Experience */}
-                        <motion.div style={{ opacity: opacity3, y: y3 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-3xl drop-shadow-md">
-                            <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-pink leading-tight">
-                                +10 años de experiencia
-                            </h3>
-                            <p className="text-base sm:text-xl md:text-3xl font-bold leading-relaxed">
-                                Creamos experiencias que encienden sonrisas con personajes, dinámicas y momentos WOW.
-                            </p>
-                        </motion.div>
+                            {/* Screen 3: Experience */}
+                            <motion.div style={{ opacity: opacity3, y: y3 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center pointer-events-none">
+                                <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-pink leading-tight drop-shadow-lg max-w-4xl mx-auto">
+                                    +10 años de experiencia
+                                </h3>
+                                <p className="text-white text-base sm:text-xl md:text-3xl font-bold leading-relaxed max-w-2xl mx-auto drop-shadow-md">
+                                    Creamos experiencias que encienden sonrisas con personajes, dinámicas y momentos WOW.
+                                </p>
+                            </motion.div>
 
-                        {/* Screen 4: Production */}
-                        <motion.div style={{ opacity: opacity4, y: y4 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-3xl drop-shadow-md">
-                            <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-blue leading-tight">
-                                Producción completa
-                            </h3>
-                            <p className="text-base sm:text-xl md:text-3xl font-bold leading-relaxed">
-                                Nos encargamos de todo: ritmo, interacción, energía, música y recuerdos inolvidables.
-                            </p>
-                        </motion.div>
+                            {/* Screen 4: Production */}
+                            <motion.div style={{ opacity: opacity4, y: y4 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center pointer-events-none">
+                                <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-blue leading-tight drop-shadow-lg max-w-4xl mx-auto">
+                                    Producción completa
+                                </h3>
+                                <p className="text-white text-base sm:text-xl md:text-3xl font-bold leading-relaxed max-w-2xl mx-auto drop-shadow-md">
+                                    Nos encargamos de todo: ritmo, interacción, energía, música y recuerdos inolvidables.
+                                </p>
+                            </motion.div>
 
-                        {/* Screen 5: CTA */}
-                        <motion.div style={{ opacity: opacity5, y: y5 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-4xl">
-                            <h3 className="text-2xl sm:text-4xl md:text-6xl font-black mb-8 leading-tight drop-shadow-lg">
-                                Convierte tu evento en un<br />recuerdo inolvidable
-                            </h3>
-                            <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full justify-center items-center">
-                                <button
-                                    onClick={() => window.open('https://wa.me/524421434797', '_blank')}
-                                    className="bg-brand-green text-white text-base md:text-xl font-black px-8 py-3 md:px-10 md:py-5 rounded-full border-4 border-gray-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 w-full md:w-auto"
-                                >
-                                    Cotizar ahora <ArrowRight size={24} />
-                                </button>
+                            {/* Screen 5: CTA */}
+                            <motion.div style={{ opacity: opacity5, y: y5 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center">
+                                <h3 className="text-2xl sm:text-4xl md:text-6xl font-black text-white mb-8 leading-tight drop-shadow-lg max-w-5xl mx-auto">
+                                    Convierte tu evento en un<br />recuerdo inolvidable
+                                </h3>
+                                <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full justify-center items-center pointer-events-auto">
+                                    <button
+                                        onClick={() => window.open('https://wa.me/524421434797', '_blank')}
+                                        className="bg-brand-green text-white text-base md:text-xl font-black px-8 py-3 md:px-10 md:py-5 rounded-full border-4 border-gray-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 w-full md:w-auto transform-gpu"
+                                    >
+                                        Cotizar ahora <ArrowRight size={24} />
+                                    </button>
+                                </div>
+                            </motion.div>
+                        </div>
 
+                        {/* Scroll Indicator */}
+                        <motion.div
+                            style={{ opacity: opacity1 }}
+                            className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white flex flex-col items-center gap-2 animate-bounce pointer-events-none z-20"
+                        >
+                            <span className="text-xs md:text-sm font-bold uppercase tracking-widest drop-shadow-md">Desliza</span>
+                            <div className="w-1 h-12 bg-white/50 rounded-full relative overflow-hidden backdrop-blur-sm">
+                                <div className="absolute top-0 w-full h-1/2 bg-white animate-slide-down"></div>
                             </div>
                         </motion.div>
                     </div>
-
-                    <motion.div
-                        style={{ opacity: opacity1 }}
-                        className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white flex flex-col items-center gap-2 animate-bounce pointer-events-none"
-                    >
-                        <span className="text-xs md:text-sm font-bold uppercase tracking-widest">Desliza</span>
-                        <div className="w-1 h-12 bg-white/50 rounded-full relative overflow-hidden">
-                            <div className="absolute top-0 w-full h-1/2 bg-white animate-slide-down"></div>
-                        </div>
-                    </motion.div>
                 </div>
-            </div>
+            </main>
 
             {/* COMBINED LOGO TO CAROUSEL SECTION */}
             <div id="personajes">

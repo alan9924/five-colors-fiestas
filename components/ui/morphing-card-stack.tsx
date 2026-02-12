@@ -178,17 +178,37 @@ export function Component({
                                     }}
                                 >
                                     <div className={cn(
-                                        "flex gap-4 h-full p-4",
-                                        layout === "list" ? "flex-row items-center md:items-start text-left" : "flex-col items-center justify-between text-center"
+                                        "flex gap-3 h-full p-3 md:p-6",
+                                        layout === "list" ? "flex-row items-center md:items-start text-left" : "flex-col items-center justify-start text-center"
                                     )}>
+                                        {/* Image Section */}
+                                        {/* Render image first naturally for stack/grid vertical layout, but manage order for list via flex-direction or order util if needed.
+                                            Actually, let's keep it simple. Stack: Image Top, Text Bottom. List: Image Left, Text Right.
+                                        */}
+                                        {(card.image || card.icon) && (
+                                            <div className={cn(
+                                                "flex-shrink-0 rounded-xl overflow-hidden bg-white border border-gray-100 shadow-sm relative z-20 mx-auto",
+                                                layout === "list" ? "w-20 h-20 md:w-32 md:h-32" : "w-full h-40 md:h-64 mb-4"
+                                            )}>
+                                                {card.image ? (
+                                                    <img src={card.image} alt={card.title} className="w-full h-full object-contain p-2" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                                        {card.icon}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Text Section */}
                                         <div className={cn(
-                                            "min-w-0 flex-1 w-full",
-                                            layout === "list" ? "pt-1" : "pb-2 order-last"
+                                            "min-w-0 flex-1 w-full flex flex-col justify-center",
+                                            layout === "list" ? "pt-1" : ""
                                         )}>
-                                            <h3 className="font-black text-slate-800 text-lg md:text-2xl mb-2">{card.title}</h3>
+                                            <h3 className="font-black text-black text-xl md:text-3xl mb-2 leading-tight">{card.title}</h3>
                                             <p
                                                 className={cn(
-                                                    "text-slate-600 font-medium leading-relaxed text-sm md:text-base",
+                                                    "text-gray-900 font-semibold leading-relaxed text-sm md:text-lg",
                                                     layout === "stack" && "line-clamp-4",
                                                     layout === "grid" && "line-clamp-3",
                                                     layout === "list" && "line-clamp-2",
@@ -197,22 +217,6 @@ export function Component({
                                                 {card.description}
                                             </p>
                                         </div>
-
-                                        {card.image ? (
-                                            <div className={cn(
-                                                "flex-shrink-0 rounded-xl overflow-hidden bg-white/50 border border-white/20 shadow-sm relative z-20 mx-auto",
-                                                layout === "list" ? "w-20 h-20 md:w-32 md:h-32" : "w-full h-48 md:h-64"
-                                            )}>
-                                                <img src={card.image} alt={card.title} className="w-full h-full object-contain" />
-                                            </div>
-                                        ) : (card.icon && (
-                                            <div className={cn(
-                                                "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/80 text-foreground shadow-sm",
-                                                layout === "list" ? "order-first" : ""
-                                            )}>
-                                                {card.icon}
-                                            </div>
-                                        ))}
                                     </div>
 
 

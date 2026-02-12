@@ -119,59 +119,17 @@ export const CircularRevealHeading = ({
     const radius = isMobile ? 120 : config.radius;
 
     // Preload images
-    const imagesLoaded = items.length > 0; // Simplified for this context or keep usePreloadImages if desired. 
-    // keeping usePreloadImages logic below but moving it out of render logic to avoid hook rules issues if conditional.
-    // Actually, just use the hook as is.
+    const imagesLoaded = items.length > 0;
     usePreloadImages(items.map(item => item.image));
-
-    const createTextSegments = () => {
-        const totalItems = items.length;
-        // Adjust gap for mobile to prevent text overlap
-        const gap = isMobile ? 50 : config.gap;
-
-        const totalGapDegrees = gap * totalItems;
-        const availableDegrees = 360 - totalGapDegrees;
-        const segmentDegrees = availableDegrees / totalItems;
-
-        return items.map((item, index) => {
-            const startPosition = index * (segmentDegrees + gap);
-            // Calculate starting offset for textPath
-            // We need to map degrees to percentage (0-100%)
-            // 0 degrees is typically at 3 o'clock for SVG arc, but rotation handles position.
-            // Let's just distribute evenly.
-            const startOffset = `${(index * 100) / totalItems}%`; // Simplification for even distribution along the path
-
-            return (
-                <text key={index} className={cn(
-                    isMobile ? 'text-[10px]' : config.fontSize,
-                    "font-black tracking-[0.2em] uppercase select-none fill-slate-800"
-                )}
-                    style={{ textShadow: '0px 1px 2px rgba(255,255,255,0.5)' }}
-                >
-                    <textPath
-                        href="#curve"
-                        startOffset={startOffset}
-                        className="transition-all duration-300 hover:fill-blue-600 cursor-pointer"
-                        onMouseEnter={() => setActiveImage(item.image)}
-                        onMouseLeave={() => setActiveImage(null)}
-                        // Center text in its segment
-                        textAnchor="middle"
-                    >
-                        {item.text}
-                    </textPath>
-                </text>
-            );
-        });
-    };
 
     return (
         <>
             <ImagePreloader images={items.map(item => item.image)} />
             <motion.div
                 className={cn(
-                    "relative rounded-full bg-[#e0e5ec] shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] flex items-center justify-center overflow-hidden",
-                    // Responsive sizing
-                    "w-[300px] h-[300px] md:w-[450px] md:h-[450px] lg:w-[500px] lg:h-[500px]",
+                    "relative rounded-full bg-[#e0e5ec] shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] flex items-center justify-center overflow-hidden aspect-square mx-auto",
+                    // Responsive sizing using both w/h, but let aspect-square handle the ratio
+                    "w-[300px] md:w-[450px] lg:w-[500px]",
                     className
                 )}
             >
@@ -182,7 +140,8 @@ export const CircularRevealHeading = ({
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.9 }}
-                            className="absolute inset-4 md:inset-8 rounded-full overflow-hidden z-20 pointer-events-none shadow-inner"
+                            className="absolute inset-4 md:inset-8 rounded-full overflow-hidden z-20 shadow-inner cursor-pointer"
+                            onClick={() => setActiveImage(null)}
                         >
                             <img
                                 src={activeImage}
@@ -190,13 +149,17 @@ export const CircularRevealHeading = ({
                                 className="w-full h-full object-cover"
                             />
                             <div className="absolute inset-0 bg-black/10" />
+                            {/* Tap hint for mobile */}
+                            <div className="absolute bottom-4 left-0 right-0 text-center text-white/80 text-xs font-medium md:hidden">
+                                Toca para cerrar
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
 
                 {/* Rotating Text Ring */}
                 <motion.div
-                    className="absolute inset-0 z-30 pointer-events-auto"
+                    className="absolute inset-0 z-30 pointer-events-none"
                     animate={{ rotate: 360 }}
                     transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
                 >
@@ -206,7 +169,37 @@ export const CircularRevealHeading = ({
                             fill="none"
                             d="M 200, 200 m -160, 0 a 160,160 0 1,1 320,0 a 160,160 0 1,1 -320,0"
                         />
-                        {createTextSegments()}
+                        {items.map((item, index) => {
+                            const totalItems = items.length;
+                            const gap = isMobile ? 50 : config.gap;
+                            const totalGapDegrees = gap * totalItems;
+                            const availableDegrees = 360 - totalGapDegrees;
+                            const segmentDegrees = availableDegrees / totalItems;
+
+                            const startPosition = index * (segmentDegrees + gap);
+                            const startOffset = `${(index * 100) / totalItems}%`;
+
+                            return (
+                                <text key={index} className={cn(
+                                    isMobile ? 'text-[10px]' : config.fontSize,
+                                    "font-black tracking-[0.2em] uppercase select-none fill-slate-800 pointer-events-auto"
+                                )}
+                                    style={{ textShadow: '0px 1px 2px rgba(255,255,255,0.5)' }}
+                                >
+                                    <textPath
+                                        href="#curve"
+                                        startOffset={startOffset}
+                                        className="transition-all duration-300 hover:fill-blue-600 cursor-pointer"
+                                        onMouseEnter={() => !isMobile && setActiveImage(item.image)}
+                                        onMouseLeave={() => !isMobile && setActiveImage(null)}
+                                        onClick={() => setActiveImage(item.image)}
+                                        textAnchor="middle"
+                                    >
+                                        {item.text}
+                                    </textPath>
+                                </text>
+                            );
+                        })}
                     </svg>
                 </motion.div>
 
