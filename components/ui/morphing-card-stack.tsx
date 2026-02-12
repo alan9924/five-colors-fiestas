@@ -178,18 +178,18 @@ export function Component({
                                     }}
                                 >
                                     <div className={cn(
-                                        "flex gap-4 h-full",
-                                        layout === "list" ? "flex-row items-center md:items-start text-left" : "flex-col items-center justify-center text-center"
+                                        "flex gap-4 h-full p-4",
+                                        layout === "list" ? "flex-row items-center md:items-start text-left" : "flex-col items-center justify-between text-center"
                                     )}>
                                         <div className={cn(
-                                            "min-w-0 flex-1",
-                                            layout === "list" ? "pt-1" : "pb-2 order-first"
+                                            "min-w-0 flex-1 w-full",
+                                            layout === "list" ? "pt-1" : "pb-2 order-last"
                                         )}>
-                                            <h3 className="font-semibold text-card-foreground truncate text-base md:text-lg">{card.title}</h3>
+                                            <h3 className="font-black text-slate-800 text-lg md:text-2xl mb-2">{card.title}</h3>
                                             <p
                                                 className={cn(
-                                                    "text-sm text-muted-foreground mt-1 md:mt-2 leading-relaxed text-xs md:text-sm",
-                                                    layout === "stack" && "line-clamp-3",
+                                                    "text-slate-600 font-medium leading-relaxed text-sm md:text-base",
+                                                    layout === "stack" && "line-clamp-4",
                                                     layout === "grid" && "line-clamp-3",
                                                     layout === "list" && "line-clamp-2",
                                                 )}
@@ -200,8 +200,8 @@ export function Component({
 
                                         {card.image ? (
                                             <div className={cn(
-                                                "flex-shrink-0 rounded-xl overflow-hidden bg-white/50 border border-white/20 shadow-sm relative z-20",
-                                                layout === "list" ? "w-24 h-24 md:w-32 md:h-32 order-first" : "w-56 h-56 md:w-80 md:h-80"
+                                                "flex-shrink-0 rounded-xl overflow-hidden bg-white/50 border border-white/20 shadow-sm relative z-20 mx-auto",
+                                                layout === "list" ? "w-20 h-20 md:w-32 md:h-32" : "w-full h-48 md:h-64"
                                             )}>
                                                 <img src={card.image} alt={card.title} className="w-full h-full object-contain" />
                                             </div>

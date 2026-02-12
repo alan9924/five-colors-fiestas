@@ -84,9 +84,9 @@ const ShowsInfantilesSection: React.FC = () => {
             </button>
             <ShowMenu />
 
-            {/* Height increased to 400vh to accommodate 5 screens */}
-            <div ref={containerRef} className="h-[400vh] relative">
-                <div className="sticky top-0 h-screen w-full overflow-hidden bg-black">
+            {/* Height adjusted for mobile and desktop screens */}
+            <div ref={containerRef} className="h-[350vh] md:h-[400vh] relative">
+                <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-black">
                     <video
                         autoPlay
                         muted
@@ -99,57 +99,57 @@ const ShowsInfantilesSection: React.FC = () => {
 
                     <div className="absolute inset-0 bg-black/30 pointer-events-none" />
 
-                    <div className="absolute inset-0 flex items-center justify-center p-6 text-center text-white z-10">
+                    <div className="absolute inset-0 flex items-center justify-center p-4 md:p-6 text-center text-white z-10 w-full">
 
                         {/* Screen 1 */}
-                        <motion.div style={{ opacity: opacity1, y: y1 }} className="absolute flex flex-col items-center max-w-4xl px-4">
-                            <h2 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)]">
+                        <motion.div style={{ opacity: opacity1, y: y1 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-4xl">
+                            <h2 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] leading-tight">
                                 Shows Infantiles
                             </h2>
-                            <p className="text-xl sm:text-2xl md:text-4xl font-bold text-brand-yellow drop-shadow-md">
+                            <p className="text-lg sm:text-2xl md:text-4xl font-bold text-brand-yellow drop-shadow-md">
                                 El show empieza aquí.
                             </p>
                         </motion.div>
 
                         {/* Screen 2: NEW - 20+ Personajes */}
-                        <motion.div style={{ opacity: opacity2, y: y2 }} className="absolute flex flex-col items-center max-w-3xl drop-shadow-md px-4">
-                            <h3 className="text-4xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-orange">
+                        <motion.div style={{ opacity: opacity2, y: y2 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-3xl drop-shadow-md">
+                            <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-orange leading-tight">
                                 +20 Personajes
                             </h3>
-                            <p className="text-lg sm:text-xl md:text-3xl font-bold leading-relaxed">
+                            <p className="text-base sm:text-xl md:text-3xl font-bold leading-relaxed">
                                 Desde clásicos hasta los más nuevos. ¡Tenemos a tu favorito listo para la fiesta!
                             </p>
                         </motion.div>
 
                         {/* Screen 3: Experience */}
-                        <motion.div style={{ opacity: opacity3, y: y3 }} className="absolute flex flex-col items-center max-w-3xl drop-shadow-md px-4">
-                            <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-pink">
+                        <motion.div style={{ opacity: opacity3, y: y3 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-3xl drop-shadow-md">
+                            <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-pink leading-tight">
                                 +10 años de experiencia
                             </h3>
-                            <p className="text-lg sm:text-xl md:text-3xl font-bold leading-relaxed">
+                            <p className="text-base sm:text-xl md:text-3xl font-bold leading-relaxed">
                                 Creamos experiencias que encienden sonrisas con personajes, dinámicas y momentos WOW.
                             </p>
                         </motion.div>
 
                         {/* Screen 4: Production */}
-                        <motion.div style={{ opacity: opacity4, y: y4 }} className="absolute flex flex-col items-center max-w-3xl drop-shadow-md px-4">
-                            <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-blue">
+                        <motion.div style={{ opacity: opacity4, y: y4 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-3xl drop-shadow-md">
+                            <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-blue leading-tight">
                                 Producción completa
                             </h3>
-                            <p className="text-lg sm:text-xl md:text-3xl font-bold leading-relaxed">
+                            <p className="text-base sm:text-xl md:text-3xl font-bold leading-relaxed">
                                 Nos encargamos de todo: ritmo, interacción, energía, música y recuerdos inolvidables.
                             </p>
                         </motion.div>
 
                         {/* Screen 5: CTA */}
-                        <motion.div style={{ opacity: opacity5, y: y5 }} className="absolute flex flex-col items-center max-w-4xl px-4">
-                            <h3 className="text-3xl sm:text-4xl md:text-6xl font-black mb-8 leading-tight drop-shadow-lg">
+                        <motion.div style={{ opacity: opacity5, y: y5 }} className="absolute flex flex-col items-center w-full max-w-[90%] md:max-w-4xl">
+                            <h3 className="text-2xl sm:text-4xl md:text-6xl font-black mb-8 leading-tight drop-shadow-lg">
                                 Convierte tu evento en un<br />recuerdo inolvidable
                             </h3>
-                            <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full justify-center">
+                            <div className="flex flex-col md:flex-row gap-4 md:gap-6 w-full justify-center items-center">
                                 <button
                                     onClick={() => window.open('https://wa.me/524421434797', '_blank')}
-                                    className="bg-brand-green text-white text-lg md:text-xl font-black px-8 py-4 md:px-10 md:py-5 rounded-full border-4 border-gray-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
+                                    className="bg-brand-green text-white text-base md:text-xl font-black px-8 py-3 md:px-10 md:py-5 rounded-full border-4 border-gray-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 w-full md:w-auto"
                                 >
                                     Cotizar ahora <ArrowRight size={24} />
                                 </button>
@@ -160,9 +160,9 @@ const ShowsInfantilesSection: React.FC = () => {
 
                     <motion.div
                         style={{ opacity: opacity1 }}
-                        className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white flex flex-col items-center gap-2 animate-bounce"
+                        className="absolute bottom-10 left-1/2 -translate-x-1/2 text-white flex flex-col items-center gap-2 animate-bounce pointer-events-none"
                     >
-                        <span className="text-sm font-bold uppercase tracking-widest">Desliza</span>
+                        <span className="text-xs md:text-sm font-bold uppercase tracking-widest">Desliza</span>
                         <div className="w-1 h-12 bg-white/50 rounded-full relative overflow-hidden">
                             <div className="absolute top-0 w-full h-1/2 bg-white animate-slide-down"></div>
                         </div>

@@ -38,9 +38,9 @@ const cardData = [
 
 export default function EventosCorporativosStack() {
     return (
-        <div className="py-16 px-4 max-w-4xl mx-auto">
-            <h2 className="text-4xl font-bold text-center mb-2">Eventos Corporativos</h2>
-            <p className="text-center text-muted-foreground mb-6">
+        <div className="py-16 px-4 max-w-5xl mx-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 leading-tight">Eventos Corporativos</h2>
+            <p className="text-center text-muted-foreground mb-8 text-base md:text-lg px-2">
                 Experiencias para empresas: integración, energía y resultados reales.
             </p>
             <Component cards={cardData} defaultLayout="stack" />

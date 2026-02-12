@@ -105,45 +105,61 @@ export const CircularRevealHeading = ({
 }: CircularRevealHeadingProps) => {
     const [activeImage, setActiveImage] = useState<string | null>(null);
     const config = sizeConfig[size];
-    const imagesLoaded = usePreloadImages(items.map(item => item.image));
+    // Simple check for SSR safety, though this component is "use client"
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 768);
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // On mobile, force a smaller radius/size implicitly by scaling the SVG or container
+    const radius = isMobile ? 120 : config.radius;
+
+    // Preload images
+    const imagesLoaded = items.length > 0; // Simplified for this context or keep usePreloadImages if desired. 
+    // keeping usePreloadImages logic below but moving it out of render logic to avoid hook rules issues if conditional.
+    // Actually, just use the hook as is.
+    usePreloadImages(items.map(item => item.image));
 
     const createTextSegments = () => {
         const totalItems = items.length;
-        const totalGapDegrees = config.gap * totalItems; // Total space for gaps
-        const availableDegrees = 360 - totalGapDegrees; // Remaining space for text
-        const segmentDegrees = availableDegrees / totalItems; // Space per text segment
+        // Adjust gap for mobile to prevent text overlap
+        const gap = isMobile ? 50 : config.gap;
+
+        const totalGapDegrees = gap * totalItems;
+        const availableDegrees = 360 - totalGapDegrees;
+        const segmentDegrees = availableDegrees / totalItems;
+
         return items.map((item, index) => {
-            const startPosition = index * (segmentDegrees + config.gap);
-            const startOffset = `${(startPosition / 360) * 100}%`;
+            const startPosition = index * (segmentDegrees + gap);
+            // Calculate starting offset for textPath
+            // We need to map degrees to percentage (0-100%)
+            // 0 degrees is typically at 3 o'clock for SVG arc, but rotation handles position.
+            // Let's just distribute evenly.
+            const startOffset = `${(index * 100) / totalItems}%`; // Simplification for even distribution along the path
+
             return (
-                <g key={index}>
-                    <text
-                        className={cn(
-                            config.fontSize,
-                            config.tracking,
-                            config.textStyle,
-                            "uppercase cursor-pointer transition-all duration-300"
-                        )}
-                        onMouseEnter={() => imagesLoaded && setActiveImage(item.image)}
+                <text key={index} className={cn(
+                    isMobile ? 'text-[10px]' : config.fontSize,
+                    "font-black tracking-[0.2em] uppercase select-none fill-slate-800"
+                )}
+                    style={{ textShadow: '0px 1px 2px rgba(255,255,255,0.5)' }}
+                >
+                    <textPath
+                        href="#curve"
+                        startOffset={startOffset}
+                        className="transition-all duration-300 hover:fill-blue-600 cursor-pointer"
+                        onMouseEnter={() => setActiveImage(item.image)}
                         onMouseLeave={() => setActiveImage(null)}
-                        style={{
-                            transition: 'all 0.3s ease',
-                            paintOrder: "stroke",
-                            stroke: "rgba(0,0,0,0.10)",
-                            strokeWidth: 0.6
-                        }}
+                        // Center text in its segment
+                        textAnchor="middle"
                     >
-                        <textPath
-                            href="#curve"
-                            style={{ fill: "#000000" }}
-                            startOffset={startOffset}
-                            textLength={`${segmentDegrees * 1.8}`}
-                            lengthAdjust="spacingAndGlyphs"
-                        >
-                            {item.text}
-                        </textPath>
-                    </text>
-                </g>
+                        {item.text}
+                    </textPath>
+                </text>
             );
         });
     };
@@ -152,89 +168,58 @@ export const CircularRevealHeading = ({
         <>
             <ImagePreloader images={items.map(item => item.image)} />
             <motion.div
-                whileHover={{
-                    boxShadow: "20px 20px 40px #bebebe, -20px -20px 40px #ffffff"
-                }}
-                whileTap={{ scale: 0.98 }}
-                animate={{ y: [0, -8, 0] }}
-                transition={{
-                    duration: 5,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                }}
                 className={cn(
-                    "relative overflow-hidden",
-                    config.container,
-                    "rounded-full bg-[#e6e6e6]",
-                    "shadow-[16px_16px_32px_#bebebe,-16px_-16px_32px_#ffffff]",
-                    "transition-all duration-500 ease-out",
+                    "relative rounded-full bg-[#e0e5ec] shadow-[9px_9px_16px_rgb(163,177,198,0.6),-9px_-9px_16px_rgba(255,255,255,0.5)] flex items-center justify-center overflow-hidden",
+                    // Responsive sizing
+                    "w-[300px] h-[300px] md:w-[450px] md:h-[450px] lg:w-[500px] lg:h-[500px]",
                     className
                 )}
             >
+                {/* Active Image Overlay */}
                 <AnimatePresence>
-                    {activeImage && imagesLoaded && (
-                        <ImageOverlay image={activeImage} size={size} />
+                    {activeImage && (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
+                            className="absolute inset-4 md:inset-8 rounded-full overflow-hidden z-20 pointer-events-none shadow-inner"
+                        >
+                            <img
+                                src={activeImage}
+                                alt=""
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-black/10" />
+                        </motion.div>
                     )}
                 </AnimatePresence>
 
-                <motion.div
-                    className="absolute inset-[2px] rounded-full bg-[#e6e6e6] z-10"
-                    style={{
-                        boxShadow: "inset 6px 6px 12px #d1d1d1, inset -6px -6px 12px #ffffff"
-                    }}
-                />
-
-                <motion.div
-                    className="absolute inset-[12px] rounded-full bg-[#e6e6e6] z-10"
-                    style={{
-                        boxShadow: "inset 4px 4px 8px #d1d1d1, inset -4px -4px 8px #ffffff"
-                    }}
-                />
-
-                <motion.div className="absolute inset-0 z-40 flex items-center justify-center pointer-events-none">
-                    <AnimatePresence>
-                        {!activeImage && (
-                            <motion.div
-                                initial={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ duration: 0.3 }}
-                                className="relative z-10 p-6 rounded-3xl bg-[#e6e6e6] pointer-events-auto"
-                                whileHover={{
-                                    boxShadow: "inset 3px 3px 6px #d1d1d1, inset -3px -3px 6px #ffffff"
-                                }}
-                            >
-                                {centerText}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </motion.div>
-
+                {/* Rotating Text Ring */}
                 <motion.div
                     className="absolute inset-0 z-30 pointer-events-auto"
-                    initial={{ rotate: 0 }}
                     animate={{ rotate: 360 }}
-                    transition={{
-                        duration: 30,
-                        repeat: Infinity,
-                        ease: "linear"
-                    }}
+                    transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
                 >
                     <svg viewBox="0 0 400 400" className="w-full h-full">
-                        <defs>
-                            <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stopColor="#666666" />
-                                <stop offset="100%" stopColor="#444444" />
-                            </linearGradient>
-                        </defs>
                         <path
                             id="curve"
                             fill="none"
-                            d={`M 200,200 m -${config.radius},0 a ${config.radius},${config.radius} 0 1,1 ${config.radius * 2},0 a ${config.radius},${config.radius} 0 1,1 -${config.radius * 2},0`}
+                            d="M 200, 200 m -160, 0 a 160,160 0 1,1 320,0 a 160,160 0 1,1 -320,0"
                         />
                         {createTextSegments()}
                     </svg>
                 </motion.div>
+
+                {/* Center Content (Static) */}
+                <div className="relative z-40 pointer-events-none">
+                    {/* Show center text only if no image is active */}
+                    <motion.div
+                        animate={{ opacity: activeImage ? 0 : 1, scale: activeImage ? 0.8 : 1 }}
+                        className="bg-[#e0e5ec] p-4 md:p-8 rounded-full shadow-[inset_6px_6px_12px_#b8b9be,inset_-6px_-6px_12px_#ffffff]"
+                    >
+                        {centerText}
+                    </motion.div>
+                </div>
             </motion.div>
         </>
     );
