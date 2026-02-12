@@ -34,7 +34,8 @@ const ScrollyHero = () => {
 
     return (
         <div ref={containerRef} className="relative h-[400vh] bg-brand-blue">
-            <div className="sticky top-0 h-screen w-full overflow-hidden">
+            {/* Added h-[100dvh] for mobile browsers address bar handling */}
+            <div className="sticky top-0 h-screen h-[100dvh] w-full overflow-hidden">
                 {/* 1. Video Background */}
                 <video
                     autoPlay
@@ -58,7 +59,7 @@ const ScrollyHero = () => {
                     {/* SCENE 0: Central Intro */}
                     <motion.div
                         style={{ opacity: opacity0, scale: scale0, y: y0 }}
-                        className="absolute flex flex-col items-center text-center max-w-4xl opacity-0"
+                        className="absolute flex flex-col items-center text-center max-w-4xl opacity-0 w-full px-4"
                     >
                         <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-black text-white tracking-tighter drop-shadow-lg mb-4">
                             FÁBRICA DE <br />
@@ -72,9 +73,9 @@ const ScrollyHero = () => {
                     {/* SCENE 1: Left Card */}
                     <motion.div
                         style={{ opacity: opacity1, x: x1 }}
-                        className="absolute left-6 md:left-24 lg:left-32 top-1/3 md:top-1/2 -translate-y-1/2 max-w-md p-8 rounded-[32px] bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl opacity-0"
+                        className="absolute left-1/2 -translate-x-1/2 md:translate-x-0 md:left-24 lg:left-32 top-1/2 -translate-y-1/2 w-[90%] md:w-auto max-w-md p-6 md:p-8 rounded-[32px] bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl opacity-0 text-center md:text-left"
                     >
-                        <h2 className="text-3xl md:text-5xl font-black text-white mb-4 drop-shadow-lg">
+                        <h2 className="text-3xl md:text-5xl font-black text-white mb-4 drop-shadow-lg leading-tight">
                             Empieza la <br />diversión
                         </h2>
                         <p className="text-lg md:text-xl text-white/90 leading-relaxed font-medium">
@@ -85,9 +86,9 @@ const ScrollyHero = () => {
                     {/* SCENE 2: Right Card */}
                     <motion.div
                         style={{ opacity: opacity2, x: x2 }}
-                        className="absolute right-6 md:right-24 lg:right-32 top-1/3 md:top-1/2 -translate-y-1/2 max-w-md p-8 rounded-[32px] bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl opacity-0 text-right"
+                        className="absolute left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-24 lg:right-32 top-1/2 -translate-y-1/2 w-[90%] md:w-auto max-w-md p-6 md:p-8 rounded-[32px] bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl opacity-0 text-center md:text-right"
                     >
-                        <h2 className="text-3xl md:text-5xl font-black text-white mb-4 drop-shadow-lg">
+                        <h2 className="text-3xl md:text-5xl font-black text-white mb-4 drop-shadow-lg leading-tight">
                             Momentos <br /><span className="text-brand-yellow">WOW</span>
                         </h2>
                         <p className="text-lg md:text-xl text-white/90 leading-relaxed font-medium">
@@ -98,17 +99,17 @@ const ScrollyHero = () => {
                     {/* SCENE 3: CTA */}
                     <motion.div
                         style={{ opacity: opacity3, scale: scale3 }}
-                        className="absolute flex flex-col items-center text-center opacity-0"
+                        className="absolute flex flex-col items-center text-center opacity-0 w-full px-4"
                     >
-                        <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white mb-8 drop-shadow-xl">
+                        <h2 className="text-3xl sm:text-5xl md:text-7xl font-black text-white mb-8 drop-shadow-xl leading-tight">
                             Haz tu evento <br />inolvidable
                         </h2>
                         <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                            <button className="px-8 py-3 md:px-10 md:py-4 bg-brand-yellow text-navy font-black text-lg md:text-xl rounded-full shadow-[0_10px_20px_rgba(255,212,0,0.4)] hover:scale-105 transition-transform active:scale-95 uppercase tracking-wide">
+                            <button
+                                onClick={() => document.getElementById('contacto')?.scrollIntoView({ behavior: 'smooth' })}
+                                className="px-8 py-3 md:px-10 md:py-4 bg-brand-yellow text-navy font-black text-lg md:text-xl rounded-full shadow-[0_10px_20px_rgba(255,212,0,0.4)] hover:scale-105 transition-transform active:scale-95 uppercase tracking-wide"
+                            >
                                 Reserva ahora
-                            </button>
-                            <button className="px-8 py-3 md:px-10 md:py-4 bg-white/20 backdrop-blur-md text-white border-2 border-white/50 font-black text-lg md:text-xl rounded-full hover:bg-white/30 transition-colors uppercase tracking-wide">
-                                Ver paquetes
                             </button>
                         </div>
                     </motion.div>
