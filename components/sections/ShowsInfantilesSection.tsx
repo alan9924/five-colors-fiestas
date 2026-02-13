@@ -89,7 +89,7 @@ const ShowsInfantilesSection: React.FC = () => {
             <main className="w-full overflow-x-hidden">
                 {/* Height adjusted for mobile and desktop screens, using safe viewport units */}
                 <div ref={containerRef} className="h-[350vh] md:h-[400vh] relative w-full">
-                    <div className="sticky top-0 h-[100vh] w-full overflow-hidden bg-black">
+                    <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-black">
                         {/* Video Layer - Optimized for performance */}
                         <video
                             autoPlay

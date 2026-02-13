@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useRef, useState } from 'react'; // Verified Update
 import { ArrowLeft, ExternalLink, Box, Sparkles, ScanLine, Palette, Hammer, Zap, Star, Shield, Award, Upload, Send, MapPin, X, ImageIcon } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -138,7 +140,7 @@ const MascotDesignView: React.FC<MascotDesignViewProps> = ({ onNavigate }) => {
             </div>
 
             {/* Main Content Wrapper - Strict Overflow Control */}
-            <main className="w-full max-w-[100vw] overflow-x-hidden">
+            <main className="w-full overflow-x-hidden">
                 {/* Back Button */}
                 <div className="fixed top-6 left-6 md:left-10 z-50">
                     <button

@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react';
 import { useScreenSize } from "@/components/hooks/use-screen-size";
 import { PixelTrail } from "@/components/ui/pixel-trail";
@@ -7,7 +9,7 @@ const PixelHero: React.FC = () => {
     const screenSize = useScreenSize();
 
     return (
-        <div className="relative w-full h-screen min-h-[600px] bg-brand-blue text-white flex flex-col font-display overflow-hidden">
+        <div className="relative w-full min-h-[100dvh] bg-brand-blue text-white flex flex-col font-display overflow-hidden">
             {/* Pixel Trail Background Layer */}
             <div className="absolute inset-0 z-0">
                 <PixelTrail
