@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Star, Sparkles } from 'lucide-react';
 import SectionWrapper from '../SectionWrapper';
 
@@ -41,6 +41,69 @@ const testimonials = [
   }
 ];
 
+const ScrollableMarquee: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    let animationFrameId: number;
+    let scrollSpeed = 1; // Pixels per frame - adjust for speed
+
+    const scroll = () => {
+      if (!isPaused && container) {
+        container.scrollLeft += scrollSpeed;
+
+        // Reset when scrolled past half (assuming content is duplicated)
+        // Using scrollWidth / 2 is approximate. 
+        // For perfect loop: check if scrollLeft >= scrollWidth / 2
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0;
+          // Or subtract nicely to be smoother if exact mismatch: container.scrollLeft -= container.scrollWidth / 2;
+        }
+      }
+      animationFrameId = requestAnimationFrame(scroll);
+    };
+
+    animationFrameId = requestAnimationFrame(scroll);
+
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isPaused]);
+
+  return (
+    <div className="relative w-full py-8">
+      <div
+        ref={containerRef}
+        className="flex overflow-x-auto no-scrollbar cursor-grab active:cursor-grabbing w-full"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+        onTouchStart={() => setIsPaused(true)}
+        onTouchEnd={() => {
+          // Optional: delay resume to allow swipe momentum to finish? 
+          // Simple resume is fine for now.
+          setTimeout(() => setIsPaused(false), 2000);
+        }}
+      >
+        {children}
+      </div>
+
+      {/* Gradient Fades */}
+      <div className="absolute top-0 left-0 h-full w-8 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+      <div className="absolute top-0 right-0 h-full w-8 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+
+      {/* Hide Scrollbar via CSS Injection for this component */}
+      <style>{`
+         .no-scrollbar::-webkit-scrollbar {
+           display: none;
+         }
+       `}</style>
+    </div>
+  );
+};
+
 const TestimonialsSection: React.FC = () => {
   // Create a duplicated list for seamless looping
   const allTestimonials = [...testimonials, ...testimonials];
@@ -61,49 +124,40 @@ const TestimonialsSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Marquee Container */}
-      <div className="relative w-full py-8">
+      {/* Marquee Container with Native Scroll & Auto-Scroll */}
+      <ScrollableMarquee>
+        {allTestimonials.map((item, index) => (
+          <div
+            key={`${item.id}-${index}`}
+            className="w-[85vw] md:w-[500px] flex-shrink-0 px-4 transition-transform hover:scale-[1.02] duration-300"
+          >
+            <div className="bg-brand-yellow rounded-3xl p-6 md:p-10 border-2 border-gray-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] h-full flex flex-col justify-between">
 
-        {/* Track */}
-        <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
-          {allTestimonials.map((item, index) => (
-            <div
-              key={`${item.id}-${index}`}
-              className="w-[85vw] md:w-[500px] flex-shrink-0 px-4 transition-transform hover:scale-[1.02] duration-300"
-            >
-              <div className="bg-brand-yellow rounded-3xl p-6 md:p-10 border-2 border-gray-900 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] h-full flex flex-col justify-between">
-
-                <div className="mb-6 border-b-2 border-gray-900/10 pb-4">
-                  {/* Header Info */}
-                  <div className="text-left">
-                    <h3 className="font-black text-gray-900 text-xl font-display">{item.name}</h3>
-                    <p className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{item.role}</p>
-                    <div className="flex justify-start gap-1">
-                      {[...Array(item.rating)].map((_, i) => (
-                        <Star key={i} size={18} className="fill-white stroke-gray-900 stroke-[1.5]" />
-                      ))}
-                    </div>
+              <div className="mb-6 border-b-2 border-gray-900/10 pb-4">
+                {/* Header Info */}
+                <div className="text-left">
+                  <h3 className="font-black text-gray-900 text-xl font-display">{item.name}</h3>
+                  <p className="text-sm font-bold text-gray-700 uppercase tracking-wider mb-2">{item.role}</p>
+                  <div className="flex justify-start gap-1">
+                    {[...Array(item.rating)].map((_, i) => (
+                      <Star key={i} size={18} className="fill-white stroke-gray-900 stroke-[1.5]" />
+                    ))}
                   </div>
                 </div>
-
-                {/* Quote */}
-                <div className="relative">
-                  <span className="absolute -top-4 -left-2 text-6xl text-black opacity-5 font-black font-serif leading-none">“</span>
-                  <p className="text-gray-900 font-bold leading-relaxed text-lg relative z-10">
-                    {item.text}
-                  </p>
-                </div>
-
               </div>
+
+              {/* Quote */}
+              <div className="relative">
+                <span className="absolute -top-4 -left-2 text-6xl text-black opacity-5 font-black font-serif leading-none">“</span>
+                <p className="text-gray-900 font-bold leading-relaxed text-lg relative z-10">
+                  {item.text}
+                </p>
+              </div>
+
             </div>
-          ))}
-        </div>
-
-        {/* Gradient Fades for Smooth Edges - White BG */}
-        <div className="absolute top-0 left-0 h-full w-8 md:w-32 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
-        <div className="absolute top-0 right-0 h-full w-8 md:w-32 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
-
-      </div>
+          </div>
+        ))}
+      </ScrollableMarquee>
 
       {/* Decorative background elements */}
       <div className="absolute top-10 left-10 text-brand-blue opacity-20 transform -rotate-12 -z-10">

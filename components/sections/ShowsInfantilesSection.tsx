@@ -26,24 +26,31 @@ const ShowsInfantilesSection: React.FC = () => {
 
 
     // Screen 1: Intro (0 - 15%)
-    const opacity1 = useTransform(scrollYProgress, [0, 0.1, 0.15], [1, 1, 0]);
-    const y1 = useTransform(scrollYProgress, [0, 0.15], [0, -50]);
+    const opacity1 = useTransform(scrollYProgress, [0, 0.2, 0.3], [1, 1, 0]);
+    const y1 = useTransform(scrollYProgress, [0, 0.3], [0, -50]);
 
     // Screen 2: 20+ Personajes (NEW) (15% - 35%)
-    const opacity2 = useTransform(scrollYProgress, [0.15, 0.2, 0.3, 0.35], [0, 1, 1, 0]);
-    const y2 = useTransform(scrollYProgress, [0.15, 0.35], [50, -50]);
+    const opacity2 = useTransform(scrollYProgress, [0.15, 0.35, 0.55], [0, 1, 0]);
+    const y2 = useTransform(scrollYProgress, [0.15, 0.55], [50, -50]);
 
     // Screen 3: Experience (Old 2) (35% - 55%)
-    const opacity3 = useTransform(scrollYProgress, [0.35, 0.4, 0.5, 0.55], [0, 1, 1, 0]);
-    const y3 = useTransform(scrollYProgress, [0.35, 0.55], [50, -50]);
+    const opacity3 = useTransform(scrollYProgress, [0.4, 0.6, 0.8], [0, 1, 0]);
+    const y3 = useTransform(scrollYProgress, [0.4, 0.8], [50, -50]);
 
     // Screen 4: Production (Old 3) (55% - 75%)
-    const opacity4 = useTransform(scrollYProgress, [0.55, 0.6, 0.7, 0.75], [0, 1, 1, 0]);
-    const y4 = useTransform(scrollYProgress, [0.55, 0.75], [50, -50]);
+    const opacity4 = useTransform(scrollYProgress, [0.65, 0.85, 0.95], [0, 1, 0]);
+    const y4 = useTransform(scrollYProgress, [0.65, 0.95], [50, -50]);
 
     // Screen 5: CTA (Old 4) (75% - 100%)
-    const opacity5 = useTransform(scrollYProgress, [0.75, 0.8, 1], [0, 1, 1]);
-    const y5 = useTransform(scrollYProgress, [0.75, 1], [50, 0]);
+    const opacity5 = useTransform(scrollYProgress, [0.85, 0.95, 1], [0, 1, 1]);
+    const y5 = useTransform(scrollYProgress, [0.85, 1], [50, 0]);
+
+    // Simulated Sticky: Moves down as we scroll. 
+    // For 250vh height, we need to travel ~150vh. 
+    // For 400vh height, we need to travel ~300vh.
+    // Using 150vh (approx 1000-1200px) as safe baseline for mobile to avoid void.
+    // Desktop will feel slightly 'loose' but functional.
+    const yMain = useTransform(scrollYProgress, [0, 1], ["0%", "150%"]);
 
     const shows = [
         { name: "PJ Masks", color: "bg-blue-500" },
@@ -75,7 +82,7 @@ const ShowsInfantilesSection: React.FC = () => {
     }, []);
 
     return (
-        <section id="shows-infantiles" className="relative bg-white overflow-x-hidden">
+        <section id="shows-infantiles" className="relative bg-black">
             {/* Back Button */}
             <button
                 onClick={handleBack}
@@ -88,8 +95,11 @@ const ShowsInfantilesSection: React.FC = () => {
 
             <main className="w-full overflow-x-hidden">
                 {/* Height adjusted for mobile and desktop screens, using safe viewport units */}
-                <div ref={containerRef} className="h-[350vh] md:h-[400vh] relative w-full">
-                    <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-black">
+                <div ref={containerRef} className="h-[250vh] md:h-[400vh] relative w-full">
+                    <motion.div
+                        style={{ y: yMain }}
+                        className="absolute top-0 h-[100dvh] w-full overflow-hidden bg-black"
+                    >
                         {/* Video Layer - Optimized for performance */}
                         <video
                             autoPlay
@@ -173,7 +183,7 @@ const ShowsInfantilesSection: React.FC = () => {
                                 <div className="absolute top-0 w-full h-1/2 bg-white animate-slide-down"></div>
                             </div>
                         </motion.div>
-                    </div>
+                    </motion.div>
                 </div>
             </main>
 

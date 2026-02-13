@@ -27,13 +27,13 @@ const LogoToCarouselSection: React.FC<LogoToCarouselSectionProps> = ({ character
         offset: ["start start", "end start"]
     });
 
-    // Transform values - logo moves DOWN and shrinks as you scroll
-    const scale = useTransform(scrollYProgress, [0, 0.4, 0.7], [1, 0.5, 0.35]);
-    const y = useTransform(scrollYProgress, [0, 0.4, 0.7], [0, 200, 400]);
-    const opacity = useTransform(scrollYProgress, [0, 0.5, 0.85, 1], [1, 1, 0.9, 0]);
+    // Transform values - logo simulates sticky by moving down as container scrolls up
+    const scale = useTransform(scrollYProgress, [0, 0.4, 0.8], [1, 0.6, 0.4]);
+    const y = useTransform(scrollYProgress, [0, 1], [0, 600]); // Moves down to counter scroll up
+    const opacity = useTransform(scrollYProgress, [0, 0.8, 1], [1, 1, 0]);
 
     return (
-        <div ref={containerRef} className="relative bg-white min-h-[120vh] md:min-h-[140vh]">
+        <div ref={containerRef} className="relative z-20 bg-white min-h-[120vh] md:min-h-[140vh]">
             {/* Decorative Background Elements */}
             <div className="absolute inset-0 opacity-5 pointer-events-none">
                 <div className="absolute top-10 left-10 w-32 h-32 bg-brand-yellow rounded-full blur-3xl animate-pulse"></div>
@@ -109,9 +109,9 @@ const LogoToCarouselSection: React.FC<LogoToCarouselSectionProps> = ({ character
                 <Sparkles size={20} fill="currentColor" />
             </motion.div>
 
-            {/* Animated Logo - Scrolls down with sticky positioning */}
+            {/* Animated Logo - Simulated Sticky */}
             <motion.div
-                className="sticky top-20 max-w-2xl mx-auto px-6 z-20 py-12"
+                className="relative top-20 max-w-2xl mx-auto px-6 z-20 py-12"
                 style={{
                     scale,
                     y,
