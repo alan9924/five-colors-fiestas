@@ -18,6 +18,7 @@ import GameCenterMenu from './components/GameCenterMenu';
 
 import ShowsInfantilesSection from './components/sections/ShowsInfantilesSection';
 import CharacterSkyGrid from './components/CharacterSkyGrid';
+import { useActiveSection } from './hooks/useActiveSection';
 
 const Footer = () => (
   <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white py-12 md:py-16 border-t-4 border-brand-yellow pb-24 md:pb-16">
@@ -131,6 +132,10 @@ const App: React.FC = () => {
       console.warn('Navigation history update failed (likely sandbox restriction):', e);
     }
   };
+
+  // Section IDs to observe for active state updates in URL
+  const sectionIds = ['inicio', 'quienes-somos', 'personajes', 'servicios', 'testimonios', 'contacto'];
+  useActiveSection(currentPage === 'home' ? sectionIds : []);
 
   if (currentPage === 'mascots') {
     return <MascotDesignView onNavigate={handleNavigate} />;

@@ -66,7 +66,7 @@ const CharactersSection: React.FC = () => {
 
   return (
     <SectionWrapper
-      id="characters"
+      id="personajes"
       bgColor="bg-[#FFF6E6]"
       pillText="NUESTROS PERSONAJES"
       pillColor="bg-brand-green"

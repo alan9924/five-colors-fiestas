@@ -15,7 +15,7 @@ const ScrollyHero = () => {
     }, []);
 
     return (
-        <div className="relative h-[100dvh] w-full overflow-hidden bg-gray-900">
+        <div id="inicio" className="relative h-[100dvh] w-full overflow-hidden bg-gray-900">
             {/* 1. Video Background */}
             <video
                 ref={videoRef}
@@ -25,8 +25,9 @@ const ScrollyHero = () => {
                 playsInline
                 preload="auto"
                 className="absolute inset-0 w-full h-full object-cover object-center"
-                src="/mascota-video-2.mp4"
-            />
+            >
+                <source src="/mascota-video-2.mp4" type="video/mp4" />
+            </video>
 
             {/* 2. Overlay */}
             <div className="absolute inset-0 bg-black/30 pointer-events-none" />

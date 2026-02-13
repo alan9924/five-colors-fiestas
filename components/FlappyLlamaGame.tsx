@@ -2,6 +2,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { X, Trophy, RotateCcw, Play, Volume2, VolumeX } from 'lucide-react';
 
+import { useAudioUnlock } from '../hooks/useAudioUnlock';
+
 // --- CONFIGURATION ---
 // Procedural drawing used
 
@@ -19,8 +21,9 @@ const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isMusicEnabled, setIsMusicEnabled] = useState(true); // Added music toggle
 
-  // Persist AudioContext to avoid hitting browser limits
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  // Use the AudioUnlock hook
+  const { audioCtx, unlock } = useAudioUnlock();
+
   // Music Refs
   const musicNextNoteTime = useRef(0);
   const musicNoteIndex = useRef(0);
@@ -41,27 +44,13 @@ const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
 
   // Sound Engine
   const playSound = (type: 'jump' | 'score' | 'hit') => {
-    if (isMuted || !isMounted.current) return;
+    if (isMuted || !isMounted.current || !audioCtx) return;
 
-    // Initialize context if needed
-    if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
-      try {
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-        if (AudioContext) {
-          audioCtxRef.current = new AudioContext();
-        }
-      } catch (e) {
-        return;
-      }
+    if (audioCtx.state === 'suspended') {
+      unlock();
     }
 
-    const ctx = audioCtxRef.current;
-    if (!ctx) return;
-
-    // Resume if suspended (browser policy)
-    if (ctx.state === 'suspended') {
-      ctx.resume().catch(() => { });
-    }
+    const ctx = audioCtx;
 
     try {
       const osc = ctx.createOscillator();
@@ -113,9 +102,9 @@ const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
     }
 
     const scheduleMusic = () => {
-      const ctx = audioCtxRef.current;
+      const ctx = audioCtx;
       if (!ctx) return;
-      if (ctx.state === 'suspended') ctx.resume().catch(() => { });
+      if (ctx.state === 'suspended') unlock();
 
       const lookahead = 0.1;
       const tempo = 140; // Faster tempo
@@ -175,10 +164,10 @@ const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
     };
 
     // Ensure we start scheduling from now
-    if (audioCtxRef.current) {
+    if (audioCtx) {
       // Reset clock if we stopped
-      if (musicNextNoteTime.current < audioCtxRef.current.currentTime) {
-        musicNextNoteTime.current = audioCtxRef.current.currentTime + 0.1;
+      if (musicNextNoteTime.current < audioCtx.currentTime) {
+        musicNextNoteTime.current = audioCtx.currentTime + 0.1;
       }
     }
     musicAnimationId.current = requestAnimationFrame(scheduleMusic);
@@ -186,7 +175,7 @@ const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
     return () => {
       if (musicAnimationId.current) cancelAnimationFrame(musicAnimationId.current);
     };
-  }, [gameState, isMuted, isMusicEnabled]);
+  }, [gameState, isMuted, isMusicEnabled, audioCtx]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -588,6 +577,10 @@ const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
     // Event Handlers
     const handleAction = (e?: Event) => {
       if (e) e.preventDefault();
+
+      // Unlock audio on first interaction
+      unlock();
+
       console.log("Action triggered", localState);
       if (localState === 'GAMEOVER') {
         setTimeout(() => reset(), 100);
@@ -616,14 +609,8 @@ const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
       canvas.removeEventListener('touchstart', handleAction);
       window.removeEventListener('keydown', handleKey);
 
-      // Cleanup AudioContext on unmount safely
-      if (audioCtxRef.current) {
-        const ctx = audioCtxRef.current;
-        if (ctx.state !== 'closed') {
-          ctx.close().catch(() => { });
-        }
-        audioCtxRef.current = null;
-      }
+      // Cleanup AudioContext is handled by useAudioUnlock hook
+
     };
   }, [isMuted, gameId]); // Re-bind if mute or gameId changes
 

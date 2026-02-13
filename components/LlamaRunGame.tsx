@@ -1,5 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
+import { useAudioUnlock } from '../hooks/useAudioUnlock';
 import { X, Trophy, Play, RotateCcw, Volume2, VolumeX, ArrowLeft, ArrowRight, ArrowUp, Zap, Shield as ShieldIcon, Magnet as MagnetIcon, Music, Star, Flame } from 'lucide-react';
 
 type Difficulty = 'EASY' | 'NORMAL' | 'HARD';
@@ -395,7 +396,7 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
     internalGameStateRef.current = gameState;
   }, [gameState]);
 
-  const audioCtxRef = useRef<AudioContext | null>(null);
+  const { audioCtx, unlock } = useAudioUnlock();
   const isMounted = useRef(true);
 
   // Player power-up states for UI
@@ -414,16 +415,11 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
   const musicAnimationId = useRef<number>();
 
   const playSound = (type: 'jump' | 'coin' | 'crash' | 'powerup' | 'shield_break' | 'laser') => {
-    if (isMuted || !isMounted.current) return;
-    if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
-      try {
-        const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-        if (AudioContext) audioCtxRef.current = new AudioContext();
-      } catch (e) { return; }
-    }
-    const ctx = audioCtxRef.current;
-    if (!ctx) return;
-    if (ctx.state === 'suspended') ctx.resume().catch(() => { });
+    if (isMuted || !isMounted.current || !audioCtx) return;
+
+    if (audioCtx.state === 'suspended') unlock();
+
+    const ctx = audioCtx;
 
     try {
       const osc = ctx.createOscillator();
@@ -483,15 +479,9 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
     }
 
     const scheduleMusic = () => {
-      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
-        try {
-          const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
-          if (AudioContext) audioCtxRef.current = new AudioContext();
-        } catch (e) { return; }
-      }
-      const ctx = audioCtxRef.current;
+      const ctx = audioCtx;
       if (!ctx) return;
-      if (ctx.state === 'suspended') ctx.resume().catch(() => { });
+      if (ctx.state === 'suspended') unlock();
 
       const lookahead = 0.1; // seconds
       const tempo = 120;
@@ -555,15 +545,15 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
     };
 
     // Initialize time if falling behind
-    if (audioCtxRef.current) {
-      musicNextNoteTime.current = Math.max(audioCtxRef.current.currentTime + 0.1, musicNextNoteTime.current);
+    if (audioCtx) {
+      musicNextNoteTime.current = Math.max(audioCtx.currentTime + 0.1, musicNextNoteTime.current);
     }
     musicAnimationId.current = requestAnimationFrame(scheduleMusic);
 
     return () => {
       if (musicAnimationId.current) cancelAnimationFrame(musicAnimationId.current);
     };
-  }, [isMusicEnabled, isMuted, gameState]);
+  }, [isMusicEnabled, isMuted, gameState, audioCtx]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1821,10 +1811,12 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
         if (internalGameStateRef.current === 'START') {
+          unlock();
           setGameState('PLAYING');
           internalGameStateRef.current = 'PLAYING';
           return;
         } else if (internalGameStateRef.current === 'GAMEOVER') {
+          unlock();
           setRestartKey(prev => prev + 1);
           setGameState('PLAYING');
           internalGameStateRef.current = 'PLAYING';
@@ -2082,7 +2074,7 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
 
                     {/* Main Action Button */}
                     <button
-                      onClick={() => { playSound('coin'); setGameState('PLAYING'); }}
+                      onClick={() => { unlock(); playSound('coin'); setGameState('PLAYING'); }}
                       className="relative w-full group overflow-hidden rounded-2xl touch-manipulation active:scale-95 transition-transform"
                     >
                       <div className="absolute inset-0 bg-gradient-to-r from-brand-blue via-brand-purple to-brand-pink transition-transform duration-300 group-hover:scale-105"></div>
@@ -2196,6 +2188,7 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
 
               <button
                 onClick={() => {
+                  unlock();
                   setRestartKey(prev => prev + 1);
                   setGameState('PLAYING');
                   internalGameStateRef.current = 'PLAYING';

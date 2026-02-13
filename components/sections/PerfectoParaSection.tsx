@@ -39,7 +39,7 @@ const cardData = [
 
 const PerfectoParaSection: React.FC = () => {
     return (
-        <section id="servicios" className="relative bg-gradient-to-b from-gray-50 to-white py-20 md:py-32 border-t-4 border-gray-900 overflow-hidden">
+        <section className="relative bg-gradient-to-b from-gray-50 to-white py-20 md:py-32 border-t-4 border-gray-900 overflow-hidden">
             {/* Decorative Background Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-5">
                 <div className="absolute top-20 left-10 w-32 h-32 bg-brand-pink rounded-full blur-3xl"></div>
