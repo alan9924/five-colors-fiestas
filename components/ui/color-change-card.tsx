@@ -25,33 +25,33 @@ const themeStyles: Record<CardTheme, {
 }> = {
     school: {
         ring: "hover:ring-cyan-400/50",
-        text: "group-hover:text-cyan-400",
-        icon: "group-hover:text-cyan-400",
-        gradient: "from-cyan-500/0 via-cyan-500/0 to-cyan-500/10"
+        text: "text-cyan-400 md:text-zinc-400 md:group-hover:text-cyan-400",
+        icon: "text-cyan-400 md:text-zinc-300 md:group-hover:text-cyan-400",
+        gradient: "from-cyan-500/80 via-cyan-500/20 to-cyan-500/10 md:from-cyan-500/0 md:via-cyan-500/0 md:to-cyan-500/10"
     },
     sports: {
         ring: "hover:ring-orange-500/50",
-        text: "group-hover:text-orange-500",
-        icon: "group-hover:text-orange-500",
-        gradient: "from-orange-500/0 via-orange-500/0 to-orange-500/10"
+        text: "text-orange-500 md:text-zinc-400 md:group-hover:text-orange-500",
+        icon: "text-orange-500 md:text-zinc-300 md:group-hover:text-orange-500",
+        gradient: "from-orange-500/80 via-orange-500/20 to-orange-500/10 md:from-orange-500/0 md:via-orange-500/0 md:to-orange-500/10"
     },
     fans: {
         ring: "hover:ring-purple-500/50",
-        text: "group-hover:text-purple-400",
-        icon: "group-hover:text-purple-400",
-        gradient: "from-purple-500/0 via-purple-500/0 to-purple-500/10"
+        text: "text-purple-400 md:text-zinc-400 md:group-hover:text-purple-400",
+        icon: "text-purple-400 md:text-zinc-300 md:group-hover:text-purple-400",
+        gradient: "from-purple-500/80 via-purple-500/20 to-purple-500/10 md:from-purple-500/0 md:via-purple-500/0 md:to-purple-500/10"
     },
     corporate: {
         ring: "hover:ring-amber-400/50",
-        text: "group-hover:text-amber-400",
-        icon: "group-hover:text-amber-400",
-        gradient: "from-amber-500/0 via-amber-500/0 to-amber-500/10"
+        text: "text-amber-400 md:text-zinc-400 md:group-hover:text-amber-400",
+        icon: "text-amber-400 md:text-zinc-300 md:group-hover:text-amber-400",
+        gradient: "from-amber-500/80 via-amber-500/20 to-amber-500/10 md:from-amber-500/0 md:via-amber-500/0 md:to-amber-500/10"
     },
     fiestas: {
         ring: "hover:ring-pink-400/50",
-        text: "group-hover:text-pink-400",
-        icon: "group-hover:text-pink-400",
-        gradient: "from-pink-500/0 via-pink-500/0 to-pink-500/10"
+        text: "text-pink-400 md:text-zinc-400 md:group-hover:text-pink-400",
+        icon: "text-pink-400 md:text-zinc-300 md:group-hover:text-pink-400",
+        gradient: "from-pink-500/80 via-pink-500/20 to-pink-500/10 md:from-pink-500/0 md:via-pink-500/0 md:to-pink-500/10"
     },
 };
 
@@ -128,30 +128,32 @@ const Card: React.FC<CardProps> = ({ heading, description, imgSrc, theme, onClic
         >
             {/* Background Image */}
             <div
-                className="absolute inset-0 saturate-0 transition-all duration-700 ease-out group-hover:scale-105 group-hover:saturate-100"
+                className="absolute inset-0 saturate-100 md:saturate-0 transition-all duration-700 ease-out group-hover:scale-105 group-hover:saturate-100"
                 style={{
                     backgroundImage: `url(${imgSrc})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                 }}
             >
-                <div className={cn("absolute inset-0 bg-gradient-to-t opacity-0 transition-opacity duration-500 group-hover:opacity-100", styles.gradient)} />
+                <div className={cn("absolute inset-0 bg-gradient-to-t opacity-100 md:opacity-0 transition-opacity duration-500 group-hover:opacity-100", styles.gradient)} />
+                {/* Mobile overlay for better text readability */}
+                <div className="absolute inset-0 bg-black/40 md:bg-transparent transition-colors duration-500 group-hover:bg-black/10 md:group-hover:bg-transparent" />
             </div>
 
             {/* Content Overlay */}
             <div className="relative z-20 flex h-full flex-col justify-between p-6">
                 <ArrowRight className={cn(
-                    "ml-auto text-3xl text-zinc-300 transition-all duration-500 group-hover:-rotate-45",
+                    "ml-auto text-3xl transition-all duration-500 -rotate-45 md:rotate-0 md:group-hover:-rotate-45",
                     styles.icon
                 )} />
 
-                <div className="translate-y-2 transition-transform duration-500 group-hover:translate-y-0">
-                    <h4 className="flex flex-wrap text-zinc-400 transition-colors duration-500 group-hover:text-white drop-shadow-sm">
+                <div className="translate-y-0 md:translate-y-2 transition-transform duration-500 md:group-hover:translate-y-0">
+                    <h4 className="flex flex-wrap transition-colors duration-500 drop-shadow-sm">
                         {heading.split("").map((letter, index) => (
                             <AnimatedLetter letter={letter} key={index} themeStyle={styles.text} />
                         ))}
                     </h4>
-                    <p className="mt-3 text-sm font-bold text-black opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+                    <p className="mt-3 text-sm font-bold text-white/90 md:text-black opacity-100 md:opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                         {description}
                     </p>
                 </div>

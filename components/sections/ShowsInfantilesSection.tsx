@@ -81,6 +81,16 @@ const ShowsInfantilesSection: React.FC = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    React.useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.play().catch(error => {
+                console.log("Video autoplay failed:", error);
+            });
+        }
+    }, []);
+
     return (
         <section id="shows-infantiles" className="relative bg-black">
             {/* Back Button */}
@@ -102,10 +112,12 @@ const ShowsInfantilesSection: React.FC = () => {
                     >
                         {/* Video Layer - Optimized for performance */}
                         <video
+                            ref={videoRef}
                             autoPlay
                             muted
                             loop
                             playsInline
+                            preload="auto"
                             className="absolute inset-0 w-full h-full object-cover opacity-80 pointer-events-none"
                             style={{ willChange: 'auto' }}
                         >

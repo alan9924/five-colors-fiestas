@@ -4,14 +4,26 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const ScrollyHero = () => {
+    const videoRef = React.useRef<HTMLVideoElement>(null);
+
+    React.useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.play().catch(error => {
+                console.log("Video autoplay failed:", error);
+            });
+        }
+    }, []);
+
     return (
         <div className="relative h-[100dvh] w-full overflow-hidden bg-gray-900">
             {/* 1. Video Background */}
             <video
+                ref={videoRef}
                 autoPlay
                 muted
                 loop
                 playsInline
+                preload="auto"
                 className="absolute inset-0 w-full h-full object-cover object-center"
                 src="/mascota-video-2.mp4"
             />

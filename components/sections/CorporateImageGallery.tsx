@@ -33,6 +33,12 @@ const images: ImageCard[] = [
 ];
 
 export const CorporateImageGallery: React.FC = () => {
+    const [activeCard, setActiveCard] = React.useState<number | null>(null);
+
+    const handleCardInteraction = (index: number) => {
+        setActiveCard(prev => (prev === index ? null : index));
+    };
+
     return (
         <section className="py-24 px-6 bg-gradient-to-b from-white via-blue-50/30 to-white">
             <div className="max-w-7xl mx-auto">
@@ -54,46 +60,50 @@ export const CorporateImageGallery: React.FC = () => {
 
                 {/* Image Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-                    {images.map((image, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 40 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{
-                                duration: 0.6,
-                                delay: index * 0.15,
-                                ease: [0.25, 0.1, 0.25, 1]
-                            }}
-                            className={`group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 ${index === 0 || index === 3 ? 'md:translate-y-8' : 'md:-translate-y-8'
-                                }`}
-                        >
-                            {/* Image Container */}
-                            <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100">
-                                <img
-                                    src={image.src}
-                                    alt={image.title}
-                                    className="w-full h-full object-contain p-8 group-hover:scale-110 transition-transform duration-700 ease-out"
-                                />
+                    {images.map((image, index) => {
+                        const isActive = activeCard === index;
+                        return (
+                            <motion.div
+                                key={index}
+                                initial={{ opacity: 0, y: 40 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{
+                                    duration: 0.6,
+                                    delay: index * 0.15,
+                                    ease: [0.25, 0.1, 0.25, 1]
+                                }}
+                                onClick={() => handleCardInteraction(index)}
+                                className={`group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 cursor-pointer ${index === 0 || index === 3 ? 'md:translate-y-8' : 'md:-translate-y-8'
+                                    }`}
+                            >
+                                {/* Image Container */}
+                                <div className="relative aspect-[4/3] overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100">
+                                    <img
+                                        src={image.src}
+                                        alt={image.title}
+                                        className={`w-full h-full object-contain p-8 transition-transform duration-700 ease-out group-hover:scale-110 ${isActive ? 'scale-110' : ''}`}
+                                    />
 
-                                {/* Gradient Overlay */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            </div>
+                                    {/* Gradient Overlay */}
+                                    <div className={`absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/20 to-transparent transition-opacity duration-500 group-hover:opacity-100 ${isActive ? 'opacity-100' : 'opacity-0'}`} />
+                                </div>
 
-                            {/* Text Overlay */}
-                            <div className="absolute bottom-0 left-0 right-0 p-8 transform translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out">
-                                <h3 className="text-2xl font-black text-white mb-2">
-                                    {image.title}
-                                </h3>
-                                <p className="text-white/90 text-sm leading-relaxed">
-                                    {image.description}
-                                </p>
-                            </div>
+                                {/* Text Overlay */}
+                                <div className={`absolute bottom-0 left-0 right-0 p-8 transition-transform duration-500 ease-out group-hover:translate-y-0 ${isActive ? 'translate-y-0' : 'translate-y-full'}`}>
+                                    <h3 className="text-2xl font-black text-white mb-2">
+                                        {image.title}
+                                    </h3>
+                                    <p className="text-white/90 text-sm leading-relaxed">
+                                        {image.description}
+                                    </p>
+                                </div>
 
-                            {/* Decorative Border */}
-                            <div className="absolute inset-0 border-4 border-transparent group-hover:border-blue-500/50 rounded-3xl transition-all duration-500" />
-                        </motion.div>
-                    ))}
+                                {/* Decorative Border */}
+                                <div className={`absolute inset-0 border-4 rounded-3xl transition-all duration-500 group-hover:border-blue-500/50 ${isActive ? 'border-blue-500/50' : 'border-transparent'}`} />
+                            </motion.div>
+                        );
+                    })}
                 </div>
 
                 {/* Bottom CTA */}

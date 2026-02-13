@@ -396,8 +396,6 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
   }, [gameState]);
 
   const audioCtxRef = useRef<AudioContext | null>(null);
-  const musicNextNoteTime = useRef(0);
-  const musicNoteIndex = useRef(0);
   const isMounted = useRef(true);
 
   // Player power-up states for UI
@@ -410,6 +408,11 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
     return () => { isMounted.current = false; };
   }, []);
 
+  // Music Engine State
+  const musicNextNoteTime = useRef(0);
+  const musicNoteIndex = useRef(0);
+  const musicAnimationId = useRef<number>();
+
   const playSound = (type: 'jump' | 'coin' | 'crash' | 'powerup' | 'shield_break' | 'laser') => {
     if (isMuted || !isMounted.current) return;
     if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
@@ -421,27 +424,146 @@ const LlamaRunGame: React.FC<LlamaRunGameProps> = ({ onClose }) => {
     const ctx = audioCtxRef.current;
     if (!ctx) return;
     if (ctx.state === 'suspended') ctx.resume().catch(() => { });
+
     try {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
       gain.connect(ctx.destination);
       const now = ctx.currentTime;
+
       if (type === 'jump') {
-        osc.type = 'sine'; osc.frequency.setValueAtTime(300, now); osc.frequency.linearRampToValueAtTime(600, now + 0.1); gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 0.2); osc.start(now); osc.stop(now + 0.2);
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.linearRampToValueAtTime(300, now + 0.1);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.1);
+        osc.start(now); osc.stop(now + 0.1);
       } else if (type === 'coin') {
-        osc.type = 'triangle'; osc.frequency.setValueAtTime(1200, now); osc.frequency.setValueAtTime(1800, now + 0.05); gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.1); osc.start(now); osc.stop(now + 0.1);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, now);
+        osc.frequency.setValueAtTime(1800, now + 0.05);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.1);
+        osc.start(now); osc.stop(now + 0.1);
       } else if (type === 'crash') {
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(50, now + 0.3); gain.gain.setValueAtTime(0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3);
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(100, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.start(now); osc.stop(now + 0.3);
       } else if (type === 'powerup') {
-        osc.type = 'square'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(800, now + 0.1); osc.frequency.linearRampToValueAtTime(1200, now + 0.2); gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.3); osc.start(now); osc.stop(now + 0.3);
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.linearRampToValueAtTime(600, now + 0.1);
+        osc.frequency.linearRampToValueAtTime(1000, now + 0.2);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.3);
+        osc.start(now); osc.stop(now + 0.3);
       } else if (type === 'shield_break') {
-        osc.type = 'sawtooth'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(200, now + 0.2); gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 0.2); osc.start(now); osc.stop(now + 0.2);
-      } else if (type === 'laser') {
-        osc.type = 'sine'; osc.frequency.setValueAtTime(1500, now); osc.frequency.linearRampToValueAtTime(1000, now + 0.1); gain.gain.setValueAtTime(0.05, now); gain.gain.linearRampToValueAtTime(0, now + 0.1); osc.start(now); osc.stop(now + 0.1);
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(200, now);
+        osc.frequency.exponentialRampToValueAtTime(100, now + 0.1);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.linearRampToValueAtTime(0, now + 0.1);
+        osc.start(now); osc.stop(now + 0.1);
       }
     } catch (e) { }
   };
+
+  // BACKGROUND MUSIC
+  useEffect(() => {
+    if (!isMusicEnabled || isMuted || gameState !== 'PLAYING') {
+      if (musicAnimationId.current) {
+        cancelAnimationFrame(musicAnimationId.current);
+        musicAnimationId.current = undefined;
+      }
+      return;
+    }
+
+    const scheduleMusic = () => {
+      if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') {
+        try {
+          const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+          if (AudioContext) audioCtxRef.current = new AudioContext();
+        } catch (e) { return; }
+      }
+      const ctx = audioCtxRef.current;
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume().catch(() => { });
+
+      const lookahead = 0.1; // seconds
+      const tempo = 120;
+      const secondsPerBeat = 60.0 / tempo;
+      const noteLength = 0.25; // 16th notes roughly
+
+      // Simple Retro Melody + Bass
+      // Melody: E5, G5, A5, B5 ...
+      const melody = [
+        659.25, 0, 783.99, 0, 880.00, 0, 987.77, 0,
+        659.25, 0, 587.33, 0, 523.25, 0, 493.88, 0,
+        440.00, 0, 523.25, 0, 659.25, 0, 783.99, 0,
+        880.00, 0, 987.77, 0, 1046.50, 0, 1174.66, 0
+      ];
+
+      const bass = [
+        164.81, 164.81, 164.81, 164.81, 164.81, 164.81, 164.81, 164.81,
+        146.83, 146.83, 146.83, 146.83, 130.81, 130.81, 130.81, 130.81,
+        110.00, 110.00, 130.81, 130.81, 164.81, 164.81, 196.00, 196.00,
+        220.00, 220.00, 246.94, 246.94, 261.63, 261.63, 293.66, 293.66
+      ];
+
+      // Scheduler
+      while (musicNextNoteTime.current < ctx.currentTime + lookahead) {
+        const i = musicNoteIndex.current % 32;
+        const time = musicNextNoteTime.current;
+
+        // Play Melody
+        if (melody[i] > 0) {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'square';
+          osc.frequency.value = melody[i];
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          gain.gain.setValueAtTime(0.03, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + secondsPerBeat * 0.5);
+          osc.start(time);
+          osc.stop(time + secondsPerBeat * 0.5);
+        }
+
+        // Play Bass
+        if (bass[i] > 0) {
+          const oscB = ctx.createOscillator();
+          const gainB = ctx.createGain();
+          oscB.type = 'triangle';
+          oscB.frequency.value = bass[i];
+          oscB.connect(gainB);
+          gainB.connect(ctx.destination);
+          gainB.gain.setValueAtTime(0.05, time);
+          gainB.gain.linearRampToValueAtTime(0.01, time + secondsPerBeat);
+          oscB.start(time);
+          oscB.stop(time + secondsPerBeat);
+        }
+
+        musicNextNoteTime.current += secondsPerBeat * 0.5; // 8th notes speed
+        musicNoteIndex.current++;
+      }
+
+      musicAnimationId.current = requestAnimationFrame(scheduleMusic);
+    };
+
+    // Initialize time if falling behind
+    if (audioCtxRef.current) {
+      musicNextNoteTime.current = Math.max(audioCtxRef.current.currentTime + 0.1, musicNextNoteTime.current);
+    }
+    musicAnimationId.current = requestAnimationFrame(scheduleMusic);
+
+    return () => {
+      if (musicAnimationId.current) cancelAnimationFrame(musicAnimationId.current);
+    };
+  }, [isMusicEnabled, isMuted, gameState]);
 
   useEffect(() => {
     const canvas = canvasRef.current;

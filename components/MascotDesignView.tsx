@@ -64,6 +64,21 @@ const MascotDesignView: React.FC<MascotDesignViewProps> = ({ onNavigate }) => {
         // También asegurar que el body esté en la parte superior
         document.documentElement.scrollTop = 0;
         document.body.scrollTop = 0;
+
+        // FORCE UNLOCK SCROLL
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
+        document.body.classList.remove('antigravity-scroll-lock'); // Remove potential scroll lock class
+
+        // Ensure overflow-y is auto
+        document.body.style.overflowY = 'auto';
+        document.documentElement.style.overflowY = 'auto';
+
+        return () => {
+            // Cleanup if needed, but usually we want to leave it unlocked unless we are unmounting to a locked state
+            document.body.style.overflowY = '';
+            document.documentElement.style.overflowY = '';
+        };
     }, []);
 
 

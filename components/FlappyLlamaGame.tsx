@@ -10,24 +10,32 @@ interface FlappyLlamaGameProps {
 }
 
 const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
+  // State
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameState, setGameState] = useState<'START' | 'PLAYING' | 'GAMEOVER'>('START');
   const [gameId, setGameId] = useState(0);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const [isMuted, setIsMuted] = useState(false);
+  const [isMusicEnabled, setIsMusicEnabled] = useState(true); // Added music toggle
 
   // Persist AudioContext to avoid hitting browser limits
   const audioCtxRef = useRef<AudioContext | null>(null);
+  // Music Refs
+  const musicNextNoteTime = useRef(0);
+  const musicNoteIndex = useRef(0);
+  const musicAnimationId = useRef<number>();
+
   // Mounted ref to safely handle audio cleanup
   const isMounted = useRef(true);
 
   useEffect(() => {
-    console.log("FlappyLlamaGame Mounted");
+    // console.log("FlappyLlamaGame Mounted");
     isMounted.current = true;
     return () => {
-      console.log("FlappyLlamaGame Unmounted");
+      // console.log("FlappyLlamaGame Unmounted");
       isMounted.current = false;
+      if (musicAnimationId.current) cancelAnimationFrame(musicAnimationId.current);
     };
   }, []);
 
@@ -65,34 +73,120 @@ const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
       const now = ctx.currentTime;
 
       if (type === 'jump') {
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(400, now);
-        osc.frequency.linearRampToValueAtTime(600, now + 0.1);
-        gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+        osc.type = 'square'; // Arcade jump
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.linearRampToValueAtTime(500, now + 0.1);
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
         osc.start(now);
-        osc.stop(now + 0.15);
+        osc.stop(now + 0.1);
       } else if (type === 'score') {
         osc.type = 'sine';
-        osc.frequency.setValueAtTime(800, now);
-        osc.frequency.setValueAtTime(1200, now + 0.08);
+        osc.frequency.setValueAtTime(1000, now);
+        osc.frequency.setValueAtTime(1500, now + 0.05);
         gain.gain.setValueAtTime(0.1, now);
-        gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+        gain.gain.linearRampToValueAtTime(0.001, now + 0.1);
         osc.start(now);
-        osc.stop(now + 0.15);
+        osc.stop(now + 0.1);
       } else if (type === 'hit') {
         osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(200, now);
-        osc.frequency.exponentialRampToValueAtTime(50, now + 0.3);
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.exponentialRampToValueAtTime(50, now + 0.1);
         gain.gain.setValueAtTime(0.2, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
         osc.start(now);
-        osc.stop(now + 0.3);
+        osc.stop(now + 0.2);
       }
     } catch (e) {
       // Ignore audio errors
     }
   };
+
+  // BACKGROUND MUSIC ENGINE
+  useEffect(() => {
+    if (isMuted || !isMusicEnabled || gameState !== 'PLAYING') {
+      if (musicAnimationId.current) {
+        cancelAnimationFrame(musicAnimationId.current);
+        musicAnimationId.current = undefined;
+      }
+      return;
+    }
+
+    const scheduleMusic = () => {
+      const ctx = audioCtxRef.current;
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume().catch(() => { });
+
+      const lookahead = 0.1;
+      const tempo = 140; // Faster tempo
+      const secondsPerBeat = 60.0 / tempo;
+
+      // Happy Bouncy Melody in C Major
+      // C, E, G, A ... 
+      const melody = [
+        523.25, 0, 659.25, 0, 783.99, 0, 880.00, 0,
+        783.99, 0, 659.25, 0, 523.25, 0, 392.00, 0,
+        523.25, 0, 523.25, 0, 587.33, 0, 587.33, 0,
+        659.25, 0, 659.25, 0, 523.25, 0, 0, 0
+      ];
+
+      const bass = [
+        261.63, 0, 329.63, 0, 392.00, 0, 261.63, 0,
+        293.66, 0, 349.23, 0, 440.00, 0, 293.66, 0,
+        261.63, 0, 329.63, 0, 392.00, 0, 261.63, 0,
+        196.00, 0, 246.94, 0, 293.66, 0, 196.00, 0
+      ];
+
+      while (musicNextNoteTime.current < ctx.currentTime + lookahead) {
+        const i = musicNoteIndex.current % 32;
+        const time = musicNextNoteTime.current;
+
+        // NOTE: Oscillators are cheap, recreate them
+        if (melody[i] > 0) {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.value = melody[i];
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          gain.gain.setValueAtTime(0.05, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + 0.1); // Staccato
+          osc.start(time);
+          osc.stop(time + 0.15);
+        }
+
+        if (bass[i] > 0) {
+          const oscB = ctx.createOscillator();
+          const gainB = ctx.createGain();
+          oscB.type = 'sine';
+          oscB.frequency.value = bass[i] / 2; // Sub bass
+          oscB.connect(gainB);
+          gainB.connect(ctx.destination);
+          gainB.gain.setValueAtTime(0.08, time);
+          gainB.gain.exponentialRampToValueAtTime(0.001, time + 0.2);
+          oscB.start(time);
+          oscB.stop(time + 0.25);
+        }
+
+        musicNextNoteTime.current += secondsPerBeat / 2; // 8th notes
+        musicNoteIndex.current++;
+      }
+      musicAnimationId.current = requestAnimationFrame(scheduleMusic);
+    };
+
+    // Ensure we start scheduling from now
+    if (audioCtxRef.current) {
+      // Reset clock if we stopped
+      if (musicNextNoteTime.current < audioCtxRef.current.currentTime) {
+        musicNextNoteTime.current = audioCtxRef.current.currentTime + 0.1;
+      }
+    }
+    musicAnimationId.current = requestAnimationFrame(scheduleMusic);
+
+    return () => {
+      if (musicAnimationId.current) cancelAnimationFrame(musicAnimationId.current);
+    };
+  }, [gameState, isMuted, isMusicEnabled]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -553,12 +647,25 @@ const FlappyLlamaGame: React.FC<FlappyLlamaGameProps> = ({ onClose }) => {
             <X size={24} />
           </button>
 
-          <button
-            onClick={() => setIsMuted(!isMuted)}
-            className="pointer-events-auto bg-white p-3 rounded-full border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-brand-blue hover:text-white transition-all cursor-pointer active:scale-95 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-1"
-          >
-            {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-          </button>
+          <div className="flex gap-2 pointer-events-auto">
+            <button
+              onClick={() => setIsMusicEnabled(!isMusicEnabled)}
+              className={`bg-white p-3 rounded-full border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-brand-purple hover:text-white transition-all cursor-pointer active:scale-95 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 ${!isMusicEnabled ? 'opacity-70 grayscale' : ''}`}
+              title="Music"
+            >
+              {isMusicEnabled ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="1" y1="1" x2="23" y2="23" /><path d="M9 18V5l12-2v13" /><circle cx="6" cy="18" r="3" /><circle cx="18" cy="16" r="3" /></svg>
+              )}
+            </button>
+            <button
+              onClick={() => setIsMuted(!isMuted)}
+              className="bg-white p-3 rounded-full border-2 border-gray-900 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-brand-blue hover:text-white transition-all cursor-pointer active:scale-95 active:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-y-1"
+            >
+              {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Game Canvas Container */}

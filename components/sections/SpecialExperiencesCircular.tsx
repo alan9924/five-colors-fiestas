@@ -31,7 +31,7 @@ export function SpecialExperiencesCircular() {
                     items={items}
                     centerText={
                         <div className="bg-white/80 backdrop-blur-sm px-8 py-6 rounded-[2rem] shadow-[inset_0_2px_4px_rgba(255,255,255,0.5),0_8px_16px_rgba(0,0,0,0.1)] border border-white/50 flex flex-col items-center justify-center gap-1 min-w-[200px]">
-                            <div className="text-2xl md:text-3xl font-black text-[#0B1B3A] tracking-tighter">
+                            <div className="text-lg md:text-xl font-black text-[#0B1B3A] tracking-tighter">
                                 FIVECOLORS
                             </div>
                             <div className="text-[10px] md:text-xs font-bold text-[#536b78] tracking-[0.2em] uppercase">

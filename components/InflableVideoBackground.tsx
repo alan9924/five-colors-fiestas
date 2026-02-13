@@ -1,10 +1,21 @@
 import React from 'react';
 
 export default function InflableVideoBackground() {
+    const videoRef = React.useRef<HTMLVideoElement>(null);
+
+    React.useEffect(() => {
+        if (videoRef.current) {
+            videoRef.current.play().catch(error => {
+                console.log("Video autoplay failed:", error);
+            });
+        }
+    }, []);
+
     return (
         <div className="absolute inset-0 w-full h-full overflow-hidden">
             <div className="sticky top-0 w-full h-screen">
                 <video
+                    ref={videoRef}
                     className="absolute inset-0 w-full h-full object-cover"
                     autoPlay
                     muted

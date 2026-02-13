@@ -177,7 +177,7 @@ export const CircularRevealHeading = ({
                             const segmentDegrees = availableDegrees / totalItems;
 
                             const startPosition = index * (segmentDegrees + gap);
-                            const startOffset = `${(index * 100) / totalItems}%`;
+                            const startOffset = `${((index * 100) / totalItems) + (100 / totalItems / 2)}%`;
 
                             return (
                                 <text key={index} className={cn(
