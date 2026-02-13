@@ -33,7 +33,7 @@ const LogoToCarouselSection: React.FC<LogoToCarouselSectionProps> = ({ character
     const opacity = useTransform(scrollYProgress, [0, 0.8, 1], [1, 1, 0]);
 
     return (
-        <div ref={containerRef} className="relative z-20 bg-white min-h-[120vh] md:min-h-[140vh]">
+        <div ref={containerRef} className="relative z-20 bg-white min-h-[120vh] md:min-h-[140vh] overflow-hidden">
             {/* Decorative Background Elements */}
             <div className="absolute inset-0 opacity-5 pointer-events-none">
                 <div className="absolute top-10 left-10 w-32 h-32 bg-brand-yellow rounded-full blur-3xl animate-pulse"></div>

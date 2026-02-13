@@ -141,7 +141,7 @@ const MascotDesignView: React.FC<MascotDesignViewProps> = ({ onNavigate }) => {
     };
 
     return (
-        <div className="min-h-screen bg-white font-body text-gray-900 relative">
+        <div className="min-h-screen bg-white font-body text-gray-900 relative overflow-hidden">
             {/* Abstract Background Elements - Constrained */}
             <div className="absolute top-0 right-0 w-[40vw] max-w-[300px] h-[40vw] max-h-[300px] bg-brand-yellow/30 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
             <div className="absolute bottom-0 left-0 w-[40vw] max-w-[300px] h-[40vw] max-h-[300px] bg-brand-pink/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2 pointer-events-none"></div>
