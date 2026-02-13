@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Star, ArrowRight, ArrowLeft } from 'lucide-react';
@@ -73,7 +75,7 @@ const ShowsInfantilesSection: React.FC = () => {
     }, []);
 
     return (
-        <section id="shows-infantiles" className="relative bg-white">
+        <section id="shows-infantiles" className="relative bg-white overflow-x-hidden">
             {/* Back Button */}
             <button
                 onClick={handleBack}
@@ -84,17 +86,18 @@ const ShowsInfantilesSection: React.FC = () => {
             </button>
             <ShowMenu />
 
-            <main className="w-full max-w-[100vw] overflow-x-hidden">
-                {/* Height adjusted for mobile and desktop screens, using dynamic viewport units */}
-                <div ref={containerRef} className="h-[350dvh] md:h-[400vh] relative w-full">
-                    <div className="sticky top-0 h-[100dvh] w-full overflow-hidden bg-black">
-                        {/* Video Layer - Pointer events none for performance */}
+            <main className="w-full overflow-x-hidden">
+                {/* Height adjusted for mobile and desktop screens, using safe viewport units */}
+                <div ref={containerRef} className="h-[350vh] md:h-[400vh] relative w-full">
+                    <div className="sticky top-0 h-[100vh] w-full overflow-hidden bg-black">
+                        {/* Video Layer - Optimized for performance */}
                         <video
                             autoPlay
                             muted
                             loop
                             playsInline
                             className="absolute inset-0 w-full h-full object-cover opacity-80 pointer-events-none"
+                            style={{ willChange: 'auto' }}
                         >
                             <source src="/sin_marca.mp4" type="video/mp4" />
                         </video>
@@ -105,7 +108,7 @@ const ShowsInfantilesSection: React.FC = () => {
                         <div className="absolute inset-0 flex items-center justify-center w-full h-full z-10 p-4">
 
                             {/* Screen 1 */}
-                            <motion.div style={{ opacity: opacity1, y: y1 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center">
+                            <motion.div style={{ opacity: opacity1, y: y1 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center transform-gpu">
                                 <h2 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 drop-shadow-[0_5px_5px_rgba(0,0,0,0.5)] leading-tight text-white max-w-5xl mx-auto">
                                     Shows Infantiles
                                 </h2>
@@ -115,7 +118,7 @@ const ShowsInfantilesSection: React.FC = () => {
                             </motion.div>
 
                             {/* Screen 2: NEW - 20+ Personajes */}
-                            <motion.div style={{ opacity: opacity2, y: y2 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center pointer-events-none">
+                            <motion.div style={{ opacity: opacity2, y: y2 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center pointer-events-none transform-gpu">
                                 <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-orange leading-tight drop-shadow-lg max-w-4xl mx-auto">
                                     +20 Personajes
                                 </h3>
@@ -125,7 +128,7 @@ const ShowsInfantilesSection: React.FC = () => {
                             </motion.div>
 
                             {/* Screen 3: Experience */}
-                            <motion.div style={{ opacity: opacity3, y: y3 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center pointer-events-none">
+                            <motion.div style={{ opacity: opacity3, y: y3 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center pointer-events-none transform-gpu">
                                 <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-pink leading-tight drop-shadow-lg max-w-4xl mx-auto">
                                     +10 años de experiencia
                                 </h3>
@@ -135,7 +138,7 @@ const ShowsInfantilesSection: React.FC = () => {
                             </motion.div>
 
                             {/* Screen 4: Production */}
-                            <motion.div style={{ opacity: opacity4, y: y4 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center pointer-events-none">
+                            <motion.div style={{ opacity: opacity4, y: y4 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center pointer-events-none transform-gpu">
                                 <h3 className="text-3xl sm:text-5xl md:text-7xl font-black mb-6 text-brand-blue leading-tight drop-shadow-lg max-w-4xl mx-auto">
                                     Producción completa
                                 </h3>
@@ -145,7 +148,7 @@ const ShowsInfantilesSection: React.FC = () => {
                             </motion.div>
 
                             {/* Screen 5: CTA */}
-                            <motion.div style={{ opacity: opacity5, y: y5 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center">
+                            <motion.div style={{ opacity: opacity5, y: y5 }} className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center w-full px-4 text-center transform-gpu">
                                 <h3 className="text-2xl sm:text-4xl md:text-6xl font-black text-white mb-8 leading-tight drop-shadow-lg max-w-5xl mx-auto">
                                     Convierte tu evento en un<br />recuerdo inolvidable
                                 </h3>
