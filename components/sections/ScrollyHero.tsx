@@ -33,9 +33,9 @@ const ScrollyHero = () => {
     const scale3 = useTransform(smoothProgress, [0.75, 0.8], [0.9, 1]);
 
     return (
-        <div ref={containerRef} className="relative h-[400vh] bg-brand-blue">
+        <div ref={containerRef} className="relative h-[300vh] md:h-[400vh] bg-brand-blue">
             {/* Added h-[100dvh] for mobile browsers address bar handling */}
-            <div className="sticky top-0 h-screen h-[100dvh] w-full overflow-hidden">
+            <div className="sticky top-0 h-[100dvh] w-full overflow-hidden">
                 {/* 1. Video Background */}
                 <video
                     autoPlay
@@ -51,7 +51,7 @@ const ScrollyHero = () => {
                 />
 
                 {/* 2. Overlay */}
-                <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+                <div className="absolute inset-0 bg-black/30 pointer-events-none" />
 
                 {/* 3. Text Layers */}
                 <div className="relative z-10 w-full h-full flex items-center justify-center p-6 md:p-12">
@@ -70,7 +70,7 @@ const ScrollyHero = () => {
                         </p>
                     </motion.div>
 
-                    {/* SCENE 1: Left Card */}
+                    {/* SCENE 1: Left Card - Mobile Optimized (Centered) */}
                     <motion.div
                         style={{ opacity: opacity1, x: x1 }}
                         className="absolute left-1/2 -translate-x-1/2 md:translate-x-0 md:left-24 lg:left-32 top-1/2 -translate-y-1/2 w-[90%] md:w-auto max-w-md p-6 md:p-8 rounded-[32px] bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl opacity-0 text-center md:text-left"
@@ -83,7 +83,7 @@ const ScrollyHero = () => {
                         </p>
                     </motion.div>
 
-                    {/* SCENE 2: Right Card */}
+                    {/* SCENE 2: Right Card - Mobile Optimized (Centered) */}
                     <motion.div
                         style={{ opacity: opacity2, x: x2 }}
                         className="absolute left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-24 lg:right-32 top-1/2 -translate-y-1/2 w-[90%] md:w-auto max-w-md p-6 md:p-8 rounded-[32px] bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl opacity-0 text-center md:text-right"
